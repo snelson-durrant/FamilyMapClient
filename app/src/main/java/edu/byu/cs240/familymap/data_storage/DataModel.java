@@ -1,5 +1,9 @@
 package edu.byu.cs240.familymap.data_storage;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import model.Person;
 import model.Event;
 import model.User;
@@ -52,5 +56,26 @@ public class DataModel {
 
     public void setAuthtoken(String authtoken) {
         this.authtoken = authtoken;
+    }
+
+    public List<String> getAllEventTypes() {
+
+        List<String> eventTypes = new ArrayList<>();
+
+        for (Event event : dataEvents) {
+
+            boolean found = false;
+            for (String eventType : eventTypes) {
+                if (event.getEventType().equals(eventType)) {
+                    found = true;
+                }
+            }
+
+            if (!found) {
+                eventTypes.add(event.getEventType());
+            }
+        }
+
+        return eventTypes;
     }
 }
