@@ -17,6 +17,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.Arrays;
@@ -29,8 +30,8 @@ import model.Event;
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback {
     private GoogleMap map;
-    private DataModel dataModel = DataModel.initialize();
-    private List<Float> possibleColors = Arrays.asList(
+    private final DataModel dataModel = DataModel.initialize();
+    private final List<Float> possibleColors = Arrays.asList(
 
             BitmapDescriptorFactory.HUE_RED,
             BitmapDescriptorFactory.HUE_BLUE,
@@ -88,9 +89,42 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         map = googleMap;
         map.setOnMapLoadedCallback(this);
 
+        updateMarkers();
+
+        map.setOnMarkerClickListener(marker -> {
+            Event clickedEvent = (Event) marker.getTag();
+            LatLng location = new LatLng(clickedEvent.getLatitude(), clickedEvent.getLongitude());
+            marker.showInfoWindow();
+
+            map.animateCamera(CameraUpdateFactory.newLatLng(location));
+            return true;
+        });
+    }
+
+    @Override
+    public void onMapLoaded() {
+
+        // Callback not used, but needed
+    }
+
+    @Override
+    public void onResume() {
+
+        super.onResume();
+        if (map != null) {
+
+            map.clear();
+            updateMarkers();
+        }
+    }
+
+    private void updateMarkers() {
+
         List<String> eventTypes = dataModel.getAllEventTypes();
 
-        for (Event event : dataModel.getDataEvents()) {
+        dataModel.filter();
+
+        for (Event event : dataModel.getFilteredEvents()) {
 
             LatLng location = new LatLng(event.getLatitude(), event.getLongitude());
 
@@ -101,19 +135,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 }
             }
 
-            map.addMarker(new MarkerOptions().position(location)
+            Marker marker = map.addMarker(new MarkerOptions().position(location)
                     .icon(BitmapDescriptorFactory.defaultMarker(possibleColors.get(colorIndex))));
-            map.animateCamera(CameraUpdateFactory.newLatLng(location));
+            marker.setTag(event);
+            marker.setTitle(event.getCity() + ", " + event.getCountry());
         }
-    }
-
-    @Override
-    public void onMapLoaded() {
-
-        // You probably don't need this callback. It occurs after onMapReady and I have seen
-        // cases where you get an error when adding markers or otherwise interacting with the map in
-        // onMapReady(...) because the map isn't really all the way ready. If you see that, just
-        // move all code where you interact with the map (everything after
-        // map.setOnMapLoadedCallback(...) above) to here.
     }
 }

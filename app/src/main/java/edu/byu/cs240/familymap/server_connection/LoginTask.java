@@ -8,6 +8,7 @@ import edu.byu.cs240.familymap.data_storage.DataModel;
 import model.Person;
 import model.User;
 import request.LoginRequest;
+import response.PersonIDResponse;
 import response.RegisterResponse;
 
 public class LoginTask implements Runnable {
@@ -45,6 +46,16 @@ public class LoginTask implements Runnable {
                     serverProxy.getPerson(loginResponse.getPersonID()).getGender(),
                     loginResponse.getPersonID());
             dataModel.setDataUser(currentUser);
+            PersonIDResponse personIDResponse = serverProxy.getPerson(currentUser.getPersonID());
+            Person currentPerson = new Person(personIDResponse.getPersonID(),
+                    personIDResponse.getAssociatedUsername(),
+                    personIDResponse.getFirstName(),
+                    personIDResponse.getLastName(),
+                    personIDResponse.getGender(),
+                    personIDResponse.getFatherID(),
+                    personIDResponse.getMotherID(),
+                    personIDResponse.getSpouseID());
+            dataModel.setDataUserPerson(currentPerson);
         }
 
         sendMessage(loginResponse.isSuccess());

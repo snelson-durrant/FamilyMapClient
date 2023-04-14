@@ -37,8 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_columnSpan="1"
-            android:layout_gravity="end"
-            android:checked="true"/>
+            android:layout_gravity="end" />
 
     </GridLayout>
 
@@ -79,8 +78,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_columnSpan="1"
-            android:layout_gravity="end"
-            android:checked="true"/>
+            android:layout_gravity="end" />
 
     </GridLayout>
 
@@ -121,8 +119,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_columnSpan="1"
-            android:layout_gravity="end"
-            android:checked="true"/>
+            android:layout_gravity="end" />
 
     </GridLayout>
 
@@ -163,8 +160,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_columnSpan="1"
-            android:layout_gravity="end"
-            android:checked="true"/>
+            android:layout_gravity="end" />
 
     </GridLayout>
 
@@ -205,8 +201,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_columnSpan="1"
-            android:layout_gravity="end"
-            android:checked="true"/>
+            android:layout_gravity="end" />
 
     </GridLayout>
 
@@ -247,8 +242,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_columnSpan="1"
-            android:layout_gravity="end"
-            android:checked="true"/>
+            android:layout_gravity="end" />
 
     </GridLayout>
 
@@ -289,8 +283,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_columnSpan="1"
-            android:layout_gravity="end"
-            android:checked="true"/>
+            android:layout_gravity="end" />
 
     </GridLayout>
 
@@ -303,13 +296,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="12dp"
-        android:columnCount="4" >
+        android:columnCount="4">
 
         <LinearLayout
+            android:id="@+id/logoutSection"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_columnSpan="3"
-            android:orientation="vertical" >
+            android:orientation="vertical"
+            android:background="?android:attr/selectableItemBackground" >
 
             <TextView
                 android:layout_width="match_parent"

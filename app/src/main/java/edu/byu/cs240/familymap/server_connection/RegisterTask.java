@@ -5,8 +5,10 @@ import android.os.Handler;
 import android.os.Message;
 
 import edu.byu.cs240.familymap.data_storage.DataModel;
+import model.Person;
 import model.User;
 import request.RegisterRequest;
+import response.PersonIDResponse;
 import response.RegisterResponse;
 
 public class RegisterTask implements Runnable {
@@ -44,6 +46,16 @@ public class RegisterTask implements Runnable {
                     registerRequest.getGender(),
                     registerResponse.getPersonID());
             dataModel.setDataUser(currentUser);
+            PersonIDResponse personIDResponse = serverProxy.getPerson(currentUser.getPersonID());
+            Person currentPerson = new Person(personIDResponse.getPersonID(),
+                    personIDResponse.getAssociatedUsername(),
+                    personIDResponse.getFirstName(),
+                    personIDResponse.getLastName(),
+                    personIDResponse.getGender(),
+                    personIDResponse.getFatherID(),
+                    personIDResponse.getMotherID(),
+                    personIDResponse.getSpouseID());
+            dataModel.setDataUserPerson(currentPerson);
         }
 
         sendMessage(registerResponse.isSuccess());
