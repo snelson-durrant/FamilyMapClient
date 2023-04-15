@@ -27,13 +27,33 @@ public class DataModel {
     private boolean maleFilter = true;
     private boolean femaleFilter = true;
 
-    // singleton
+    // transition variables
+    private Person transitionPerson;
+    private Event transitionEvent;
+
+    // singleton logic
     public static DataModel initialize() {
 
         if (instance == null) {
             instance = new DataModel();
         }
         return instance;
+    }
+
+    public Person getTransitionPerson() {
+        return transitionPerson;
+    }
+
+    public void setTransitionPerson(Person transitionPerson) {
+        this.transitionPerson = transitionPerson;
+    }
+
+    public Event getTransitionEvent() {
+        return transitionEvent;
+    }
+
+    public void setTransitionEvent(Event transitionEvent) {
+        this.transitionEvent = transitionEvent;
     }
 
     public Person[] getDataPeople() {
@@ -136,7 +156,7 @@ public class DataModel {
 
             boolean found = false;
             for (String eventType : eventTypes) {
-                if (event.getEventType().equals(eventType)) {
+                if (event.getEventType().equalsIgnoreCase(eventType)) {
                     found = true;
                 }
             }
@@ -155,7 +175,6 @@ public class DataModel {
         ArrayList<Event> genderFiltered = new ArrayList<>();
 
         for (Event event : dataEvents) {
-
             if (dataUserPerson.getPersonID().equals(event.getPersonID())) {
                 sideFiltered.add(event);
             }
@@ -164,7 +183,6 @@ public class DataModel {
         if (fatherFilter) {
             genRecurse(dataUserPerson.getFatherID(), sideFiltered);
         }
-
         if (motherFilter) {
             genRecurse(dataUserPerson.getMotherID(), sideFiltered);
         }
@@ -225,9 +243,9 @@ public class DataModel {
         Event personDeathEvent = null;
         for (Event event : filteredEvents) {
             if (event.getPersonID().equals(inputPerson.getPersonID())) {
-                if (event.getEventType().toLowerCase().equals("birth")) {
+                if (event.getEventType().equalsIgnoreCase("birth")) {
                     personBirthEvent = event;
-                } else if (event.getEventType().toLowerCase().equals("death")) {
+                } else if (event.getEventType().equalsIgnoreCase("death")) {
                     personDeathEvent = event;
                 } else {
                     tempEventList.add(event);
@@ -240,7 +258,29 @@ public class DataModel {
             orderedEventList.add(personBirthEvent);
         }
 
-        // TODO SORT ALL OF THE EVENTS
+        if (!tempEventList.isEmpty()) {
+
+            Event nextEvent = tempEventList.get(0);
+            while (!tempEventList.isEmpty()) {
+
+                for (Event tempEvent : tempEventList) {
+                    if (tempEvent.getYear() < nextEvent.getYear()) {
+
+                        nextEvent = tempEvent;
+                    } else if (tempEvent.getYear().equals(nextEvent.getYear())) {
+
+                        int compare = tempEvent.getEventType().compareTo(nextEvent.getEventType());
+                        if (compare < 0) {
+                            // tempEvent's eventType is first alphabetically
+                            nextEvent = tempEvent;
+                        }
+                    }
+                }
+
+                orderedEventList.add(nextEvent);
+                tempEventList.remove(nextEvent);
+            }
+        }
 
         if (personDeathEvent != null) {
             orderedEventList.add(personDeathEvent);

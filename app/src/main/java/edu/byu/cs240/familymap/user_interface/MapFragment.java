@@ -1,6 +1,5 @@
 package edu.byu.cs240.familymap.user_interface;
 
-import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -31,7 +30,6 @@ import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 import edu.byu.cs240.familymap.R;
 import edu.byu.cs240.familymap.data_storage.DataModel;
@@ -39,9 +37,9 @@ import model.Event;
 import model.Person;
 
 
-public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback {
+public class MapFragment extends Fragment implements OnMapReadyCallback,
+        GoogleMap.OnMapLoadedCallback {
     private GoogleMap map;
-    private Menu menu;
     private Event selectedEvent;
     private final DataModel dataModel = DataModel.initialize();
     private final List<Float> possibleColors = Arrays.asList(
@@ -59,15 +57,36 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     );
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater layoutInflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater layoutInflater, ViewGroup container,
+                             Bundle savedInstanceState) {
 
         super.onCreateView(layoutInflater, container, savedInstanceState);
         View view = layoutInflater.inflate(R.layout.fragment_map, container, false);
 
         setHasOptionsMenu(true);
 
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
+                .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        View logoutSection = view.findViewById(R.id.mapTextView);
+
+        logoutSection.setOnClickListener((isClicked) -> {
+
+            if (selectedEvent != null) {
+
+                Person associatedPerson = dataModel.getDataUserPerson();
+                for (Person person : dataModel.getDataPeople()) {
+                    if (selectedEvent.getPersonID().equals(person.getPersonID())) {
+                        associatedPerson = person;
+                    }
+                }
+                dataModel.setTransitionPerson(associatedPerson);
+
+                Intent i = new Intent(getContext(), PersonActivity.class);
+                startActivity(i);
+            }
+        });
 
         return view;
     }
@@ -106,7 +125,8 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
         map.setOnMarkerClickListener(marker -> {
             selectedEvent = (Event) marker.getTag();
-            LatLng location = new LatLng(selectedEvent.getLatitude(), selectedEvent.getLongitude());
+            LatLng location = new LatLng(selectedEvent.getLatitude(),
+                    selectedEvent.getLongitude());
             map.animateCamera(CameraUpdateFactory.newLatLng(location));
 
             map.clear();
@@ -138,9 +158,30 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
             map.clear();
             updateMarkers();
 
-            // TODO check to see if selected event is still there
-            updateLines();
-            updateEventInfo();
+            if (selectedEvent != null) {
+
+                boolean stillExists = false;
+                for (Event filteredEvent : dataModel.getFilteredEvents()) {
+                    if (selectedEvent.getEventID().equals(filteredEvent.getEventID())) {
+
+                        updateLines();
+                        updateEventInfo();
+                        stillExists = true;
+                    }
+                }
+
+                if (!stillExists) {
+
+                    TextView eventInfo = requireView().findViewById(R.id.eventTextView);
+                    String defaultText = "Click on any marker to see event details";
+                    eventInfo.setText(defaultText);
+
+                    Drawable genderIcon = new IconDrawable(getActivity(), FontAwesomeIcons.fa_android)
+                            .color(Color.GREEN).sizeDp(40);;
+                    ImageView icon = requireView().findViewById(R.id.eventImageView);
+                    icon.setImageDrawable(genderIcon);
+                }
+            }
         }
     }
 
@@ -156,7 +197,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
             int colorIndex = 0;
             for (int i = 0; i < eventTypes.size(); i++) {
-                if (eventTypes.get(i).equals(event.getEventType())) {
+                if (eventTypes.get(i).equalsIgnoreCase(event.getEventType())) {
                     colorIndex = i % 10;
                 }
             }
@@ -183,13 +224,55 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                 lineRecurse(associatedPerson.getFatherID(), selectedEvent, 20);
                 lineRecurse(associatedPerson.getMotherID(), selectedEvent, 20);
             }
+
             if (dataModel.isLifeStoryLines()) {
 
+                ArrayList<Event> orderedEvents = dataModel.orderPersonEvents(associatedPerson);
+                if (!orderedEvents.isEmpty()) {
+
+                    Event firstEvent = orderedEvents.get(0);
+                    for (Event lifeEvent : orderedEvents) {
+
+                        if (!lifeEvent.equals(firstEvent)) {
+
+                            PolylineOptions line = new PolylineOptions().add(
+                                            new LatLng(firstEvent.getLatitude(),
+                                                    firstEvent.getLongitude()),
+                                            new LatLng(lifeEvent.getLatitude(),
+                                                    lifeEvent.getLongitude()))
+                                    .width(15).color(Color.YELLOW);
+                            map.addPolyline(line);
+                        }
+                        firstEvent = lifeEvent;
+                    }
+                }
             }
+
             if (dataModel.isSpouseLines()) {
 
-            }
+                if (associatedPerson.getSpouseID() != null) {
+                    for (Person person : dataModel.getDataPeople()) {
+                        if (associatedPerson.getSpouseID().equals(person.getPersonID())) {
 
+                            ArrayList<Event> orderedEvents = dataModel.orderPersonEvents(person);
+                            if (!orderedEvents.isEmpty()) {
+
+                                Event firstEvent = orderedEvents.get(0);
+                                if (firstEvent != null) {
+
+                                    PolylineOptions line = new PolylineOptions().add(
+                                                    new LatLng(selectedEvent.getLatitude(),
+                                                            selectedEvent.getLongitude()),
+                                                    new LatLng(firstEvent.getLatitude(),
+                                                            firstEvent.getLongitude()))
+                                            .width(15).color(Color.BLUE);
+                                    map.addPolyline(line);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
     }
@@ -207,8 +290,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                         if (firstEvent != null) {
 
                             PolylineOptions line = new PolylineOptions().add(
-                                            new LatLng(inputEvent.getLatitude(), inputEvent.getLongitude()),
-                                            new LatLng(firstEvent.getLatitude(), firstEvent.getLongitude()))
+                                            new LatLng(inputEvent.getLatitude(),
+                                                    inputEvent.getLongitude()),
+                                            new LatLng(firstEvent.getLatitude(),
+                                                    firstEvent.getLongitude()))
                                     .width(inputWeight).color(Color.RED);
                             map.addPolyline(line);
                             inputEvent = firstEvent;

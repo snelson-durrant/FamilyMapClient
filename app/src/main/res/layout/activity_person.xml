@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ExpandableListView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:id="@+id/expandableListView"
+    android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"
+    android:dividerHeight="0.5dp"
+    android:divider="@android:color/darker_gray"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="8dp"
+    android:layout_marginRight="8dp"
+    tools:context=".user_interface.PersonActivity"/>
