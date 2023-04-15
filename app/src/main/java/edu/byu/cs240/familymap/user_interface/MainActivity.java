@@ -7,11 +7,15 @@ import androidx.fragment.app.FragmentManager;
 import android.os.Bundle;
 
 import edu.byu.cs240.familymap.R;
+import com.joanzapata.iconify.Iconify;
+import com.joanzapata.iconify.fonts.FontAwesomeModule;
 
 public class MainActivity extends AppCompatActivity implements LoginFragment.Listener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        Iconify.with(new FontAwesomeModule());
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);

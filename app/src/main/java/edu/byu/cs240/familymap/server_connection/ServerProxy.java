@@ -14,7 +14,6 @@ import edu.byu.cs240.familymap.data_storage.DataModel;
 import json.Encoder;
 import request.LoginRequest;
 import request.RegisterRequest;
-import response.EventIDResponse;
 import response.EventResponse;
 import response.PersonIDResponse;
 import response.PersonResponse;
@@ -204,41 +203,6 @@ public class ServerProxy {
                 Reader reader = new InputStreamReader(http.getInputStream());
                 personIDResponse = gson.fromJson(reader, PersonIDResponse.class);
                 return personIDResponse;
-            } else {
-
-                System.out.println("SERVER ERROR: " + http.getResponseMessage());
-            }
-        } catch (IOException e) {
-
-            e.printStackTrace();
-        }
-
-        return null;
-    }
-
-    public EventIDResponse getEvent() {
-
-        try {
-
-            EventIDResponse eventIDResponse;
-
-            URL url = new URL("http://" + serverHost + ":" + serverPort + "/event");
-            HttpURLConnection http = (HttpURLConnection)url.openConnection();
-
-            http.setRequestMethod("GET");
-            http.setDoOutput(false);
-            http.addRequestProperty("Accept", "application/json");
-
-            http.addRequestProperty("Authorization", DataModel.initialize().getAuthtoken());
-
-            http.connect();
-
-            if (http.getResponseCode() == HttpURLConnection.HTTP_OK) {
-
-                Gson gson = new Gson();
-                Reader reader = new InputStreamReader(http.getInputStream());
-                eventIDResponse = gson.fromJson(reader, EventIDResponse.class);
-                return eventIDResponse;
             } else {
 
                 System.out.println("SERVER ERROR: " + http.getResponseMessage());

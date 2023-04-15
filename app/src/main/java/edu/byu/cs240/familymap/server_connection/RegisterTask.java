@@ -13,10 +13,10 @@ import response.RegisterResponse;
 
 public class RegisterTask implements Runnable {
 
-    private String serverHost;
-    private String serverPort;
-    private RegisterRequest registerRequest;
-    private Handler messageHandler;
+    private final String serverHost;
+    private final String serverPort;
+    private final RegisterRequest registerRequest;
+    private final Handler messageHandler;
 
     public RegisterTask(Handler messageHandler, String serverHost, String serverPort, RegisterRequest registerRequest) {
 

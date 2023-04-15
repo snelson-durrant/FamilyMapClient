@@ -13,10 +13,10 @@ import response.RegisterResponse;
 
 public class LoginTask implements Runnable {
 
-    private String serverHost;
-    private String serverPort;
-    private LoginRequest loginRequest;
-    private Handler messageHandler;
+    private final String serverHost;
+    private final String serverPort;
+    private final LoginRequest loginRequest;
+    private final Handler messageHandler;
 
     public LoginTask(Handler messageHandler, String serverHost, String serverPort, LoginRequest loginRequest) {
 

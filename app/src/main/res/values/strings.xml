@@ -29,8 +29,10 @@
     <string name="logout">Logout</string>
     <string name="logout_under">RETURN TO LOGIN SCREEN</string>
 
+    <string name="event_select">Click on any marker to see event details</string>
+
     <string name="title_activity_maps">MapsActivity</string>
-    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="title_activity_settings">Settings</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
@@ -46,4 +48,6 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
+    <string name="search">Search</string>
+    <string name="settings">Settings</string>
 </resources>

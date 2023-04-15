@@ -1,6 +1,9 @@
 package edu.byu.cs240.familymap.user_interface;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -10,6 +13,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -19,17 +24,25 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.joanzapata.iconify.IconDrawable;
+import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import edu.byu.cs240.familymap.R;
 import edu.byu.cs240.familymap.data_storage.DataModel;
 import model.Event;
+import model.Person;
 
 
 public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMapLoadedCallback {
     private GoogleMap map;
+    private Menu menu;
+    private Event selectedEvent;
     private final DataModel dataModel = DataModel.initialize();
     private final List<Float> possibleColors = Arrays.asList(
 
@@ -60,7 +73,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     }
 
     @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+    public void onCreateOptionsMenu(@NonNull Menu menu, MenuInflater inflater) {
 
         inflater.inflate(R.menu.fragment_map_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
@@ -84,7 +97,7 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
+    public void onMapReady(@NonNull GoogleMap googleMap) {
 
         map = googleMap;
         map.setOnMapLoadedCallback(this);
@@ -92,13 +105,22 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
         updateMarkers();
 
         map.setOnMarkerClickListener(marker -> {
-            Event clickedEvent = (Event) marker.getTag();
-            LatLng location = new LatLng(clickedEvent.getLatitude(), clickedEvent.getLongitude());
-            marker.showInfoWindow();
-
+            selectedEvent = (Event) marker.getTag();
+            LatLng location = new LatLng(selectedEvent.getLatitude(), selectedEvent.getLongitude());
             map.animateCamera(CameraUpdateFactory.newLatLng(location));
+
+            map.clear();
+            updateMarkers();
+            updateLines();
+            updateEventInfo();
             return true;
         });
+
+        Drawable genderIcon = new IconDrawable(getActivity(), FontAwesomeIcons.fa_android)
+                .color(Color.GREEN).sizeDp(40);;
+        ImageView icon = requireView().findViewById(R.id.eventImageView);
+        icon.setImageDrawable(genderIcon);
+
     }
 
     @Override
@@ -115,6 +137,10 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
 
             map.clear();
             updateMarkers();
+
+            // TODO check to see if selected event is still there
+            updateLines();
+            updateEventInfo();
         }
     }
 
@@ -139,6 +165,97 @@ public class MapFragment extends Fragment implements OnMapReadyCallback, GoogleM
                     .icon(BitmapDescriptorFactory.defaultMarker(possibleColors.get(colorIndex))));
             marker.setTag(event);
             marker.setTitle(event.getCity() + ", " + event.getCountry());
+        }
+    }
+
+    private void updateLines() {
+
+        if (selectedEvent != null) {
+            Person associatedPerson = dataModel.getDataUserPerson();
+            for (Person person : dataModel.getDataPeople()) {
+                if (selectedEvent.getPersonID().equals(person.getPersonID())) {
+                    associatedPerson = person;
+                }
+            }
+
+            if (dataModel.isFamilyTreeLines()) {
+
+                lineRecurse(associatedPerson.getFatherID(), selectedEvent, 20);
+                lineRecurse(associatedPerson.getMotherID(), selectedEvent, 20);
+            }
+            if (dataModel.isLifeStoryLines()) {
+
+            }
+            if (dataModel.isSpouseLines()) {
+
+            }
+
+        }
+
+    }
+
+    private void lineRecurse(String inputID, Event inputEvent, int inputWeight) {
+
+        if (inputID != null && inputEvent != null) {
+            for (Person person : dataModel.getDataPeople()) {
+                if (inputID.equals(person.getPersonID())) {
+
+                    ArrayList<Event> orderedEvents = dataModel.orderPersonEvents(person);
+                    if (!orderedEvents.isEmpty()) {
+
+                        Event firstEvent = orderedEvents.get(0);
+                        if (firstEvent != null) {
+
+                            PolylineOptions line = new PolylineOptions().add(
+                                            new LatLng(inputEvent.getLatitude(), inputEvent.getLongitude()),
+                                            new LatLng(firstEvent.getLatitude(), firstEvent.getLongitude()))
+                                    .width(inputWeight).color(Color.RED);
+                            map.addPolyline(line);
+                            inputEvent = firstEvent;
+                        }
+                    }
+                }
+            }
+
+            for (Person person : dataModel.getDataPeople()) {
+                if (inputID.equals(person.getPersonID())) {
+                    lineRecurse(person.getFatherID(), inputEvent, inputWeight - 4);
+                    lineRecurse(person.getMotherID(), inputEvent, inputWeight - 4);
+                }
+            }
+        }
+    }
+
+    private void updateEventInfo() {
+
+        if (selectedEvent != null) {
+
+            Person associatedPerson = dataModel.getDataUserPerson();
+            for (Person person : dataModel.getDataPeople()) {
+                if (selectedEvent.getPersonID().equals(person.getPersonID())) {
+                    associatedPerson = person;
+                }
+            }
+
+            Drawable genderIcon;
+            if (associatedPerson.getGender().equals("m")) {
+                genderIcon = new IconDrawable(getActivity(), FontAwesomeIcons.fa_male)
+                        .color(Color.BLUE).sizeDp(40);
+            } else {
+                genderIcon = new IconDrawable(getActivity(), FontAwesomeIcons.fa_female)
+                        .color(Color.MAGENTA).sizeDp(40);
+            }
+
+            ImageView icon = requireView().findViewById(R.id.eventImageView);
+            icon.setImageDrawable(genderIcon);
+
+            TextView eventInfo = requireView().findViewById(R.id.eventTextView);
+            String textInfo = associatedPerson.getFirstName() + " " +
+                    associatedPerson.getLastName() + "\n" +
+                    selectedEvent.getEventType().toUpperCase() + ": " +
+                    selectedEvent.getCity() + ", " + selectedEvent.getCountry() +
+                    " (" + selectedEvent.getYear() + ")";
+            eventInfo.setText(textInfo);
         }
     }
 }

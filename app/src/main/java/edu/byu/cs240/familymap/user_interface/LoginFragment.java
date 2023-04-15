@@ -96,7 +96,6 @@ public class LoginFragment extends Fragment {
 
                             listener.notifyDone();
                         } else {
-
                             Toast.makeText(getContext(), "ERROR: Registration Failed.", Toast.LENGTH_SHORT).show();
                         }
                     }
@@ -146,7 +145,6 @@ public class LoginFragment extends Fragment {
 
                             listener.notifyDone();
                         } else {
-
                             Toast.makeText(getContext(), "ERROR: Sign In Failed.", Toast.LENGTH_SHORT).show();
                         }
                     }

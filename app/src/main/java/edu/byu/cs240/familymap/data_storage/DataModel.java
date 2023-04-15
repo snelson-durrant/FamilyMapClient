@@ -2,9 +2,8 @@ package edu.byu.cs240.familymap.data_storage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Locale;
 
-import edu.byu.cs240.familymap.server_connection.ServerProxy;
 import model.Person;
 import model.Event;
 import model.User;
@@ -32,7 +31,6 @@ public class DataModel {
     public static DataModel initialize() {
 
         if (instance == null) {
-
             instance = new DataModel();
         }
         return instance;
@@ -44,10 +42,6 @@ public class DataModel {
 
     public void setDataPeople(Person[] dataPeople) {
         this.dataPeople = dataPeople;
-    }
-
-    public Event[] getDataEvents() {
-        return dataEvents;
     }
 
     public void setDataEvents(Event[] dataEvents) {
@@ -70,6 +64,8 @@ public class DataModel {
         this.authtoken = authtoken;
     }
 
+    public Person getDataUserPerson() {return dataUserPerson;}
+
     public void setDataUserPerson(Person dataUserPerson) {
         this.dataUserPerson = dataUserPerson;
     }
@@ -86,9 +82,7 @@ public class DataModel {
         return familyTreeLines;
     }
 
-    public void setFamilyTreeLines(boolean familyTreeLines) {
-        this.familyTreeLines = familyTreeLines;
-    }
+    public void setFamilyTreeLines(boolean familyTreeLines) {this.familyTreeLines = familyTreeLines;}
 
     public boolean isSpouseLines() {
         return spouseLines;
@@ -157,51 +151,53 @@ public class DataModel {
 
     public void filter() {
 
-        ArrayList<Event> tempEvents = new ArrayList<>();
-        ArrayList<Event> tempEvents2 = new ArrayList<>();
+        ArrayList<Event> sideFiltered = new ArrayList<>();
+        ArrayList<Event> genderFiltered = new ArrayList<>();
 
         for (Event event : dataEvents) {
 
             if (dataUserPerson.getPersonID().equals(event.getPersonID())) {
-                tempEvents.add(event);
+                sideFiltered.add(event);
             }
         }
+
         if (fatherFilter) {
-
-            genRecurse(dataUserPerson.getFatherID(), tempEvents);
+            genRecurse(dataUserPerson.getFatherID(), sideFiltered);
         }
+
         if (motherFilter) {
-
-            genRecurse(dataUserPerson.getMotherID(), tempEvents);
+            genRecurse(dataUserPerson.getMotherID(), sideFiltered);
         }
+
         if (maleFilter) {
 
-            for (Event event : tempEvents) {
+            for (Event event : sideFiltered) {
                 for (Person person : dataPeople) {
 
                     if (event.getPersonID().equals(person.getPersonID())) {
                         if (person.getGender().equals("m")) {
-                            tempEvents2.add(event);
+                            genderFiltered.add(event);
                         }
                     }
                 }
             }
         }
+
         if (femaleFilter) {
 
-            for (Event event : tempEvents) {
+            for (Event event : sideFiltered) {
                 for (Person person : dataPeople) {
 
                     if (event.getPersonID().equals(person.getPersonID())) {
                         if (person.getGender().equals("f")) {
-                            tempEvents2.add(event);
+                            genderFiltered.add(event);
                         }
                     }
                 }
             }
         }
 
-        filteredEvents = tempEvents2.toArray(new Event[0]);
+        filteredEvents = genderFiltered.toArray(new Event[0]);
     }
 
     private void genRecurse(String inputID, ArrayList<Event> events) {
@@ -220,5 +216,36 @@ public class DataModel {
                 }
             }
         }
+    }
+
+    public ArrayList<Event> orderPersonEvents(Person inputPerson) {
+
+        ArrayList<Event> tempEventList = new ArrayList<>();
+        Event personBirthEvent = null;
+        Event personDeathEvent = null;
+        for (Event event : filteredEvents) {
+            if (event.getPersonID().equals(inputPerson.getPersonID())) {
+                if (event.getEventType().toLowerCase().equals("birth")) {
+                    personBirthEvent = event;
+                } else if (event.getEventType().toLowerCase().equals("death")) {
+                    personDeathEvent = event;
+                } else {
+                    tempEventList.add(event);
+                }
+            }
+        }
+
+        ArrayList<Event> orderedEventList = new ArrayList<>();
+        if (personBirthEvent != null) {
+            orderedEventList.add(personBirthEvent);
+        }
+
+        // TODO SORT ALL OF THE EVENTS
+
+        if (personDeathEvent != null) {
+            orderedEventList.add(personDeathEvent);
+        }
+
+        return orderedEventList;
     }
 }
