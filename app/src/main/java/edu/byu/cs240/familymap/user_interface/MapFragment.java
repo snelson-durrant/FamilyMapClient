@@ -63,15 +63,17 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         super.onCreateView(layoutInflater, container, savedInstanceState);
         View view = layoutInflater.inflate(R.layout.fragment_map, container, false);
 
-        setHasOptionsMenu(true);
+        if (getContext().getClass().equals(MainActivity.class)) {
+            setHasOptionsMenu(true);
+        }
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        View logoutSection = view.findViewById(R.id.mapTextView);
+        View personInfo = view.findViewById(R.id.mapTextView);
 
-        logoutSection.setOnClickListener((isClicked) -> {
+        personInfo.setOnClickListener((isClicked) -> {
 
             if (selectedEvent != null) {
 
@@ -122,6 +124,15 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         map.setOnMapLoadedCallback(this);
 
         updateMarkers();
+        if (getContext().getClass().equals(EventActivity.class)) {
+            selectedEvent = dataModel.getTransitionEvent();
+            LatLng location = new LatLng(selectedEvent.getLatitude(),
+                    selectedEvent.getLongitude());
+            map.animateCamera(CameraUpdateFactory.newLatLng(location));
+
+            updateLines();
+            updateEventInfo();
+        }
 
         map.setOnMarkerClickListener(marker -> {
             selectedEvent = (Event) marker.getTag();

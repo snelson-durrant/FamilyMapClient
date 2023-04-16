@@ -3,6 +3,7 @@ package edu.byu.cs240.familymap.user_interface;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -17,11 +18,11 @@ import android.widget.TextView;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.byu.cs240.familymap.R;
 import edu.byu.cs240.familymap.data_storage.DataModel;
+import edu.byu.cs240.familymap.data_storage.FamilyMember;
 import model.Event;
 import model.Person;
 
@@ -42,8 +43,20 @@ public class PersonActivity extends AppCompatActivity {
 
         activityPerson = dataModel.getTransitionPerson();
         List<Event> personEvents = dataModel.orderPersonEvents(activityPerson);
-        List<Person> personFamily = new ArrayList<>();
-        personFamily.add(activityPerson); // TODO ADD HERE
+        List<FamilyMember> personFamily = dataModel.getFamilyMembers(activityPerson);
+
+        TextView firstName = findViewById(R.id.firstNameSection);
+        firstName.setText(activityPerson.getFirstName());
+        TextView lastName = findViewById(R.id.lastNameSection);
+        lastName.setText(activityPerson.getLastName());
+        TextView gender = findViewById(R.id.genderSection);
+        if (activityPerson.getGender().equals("m")) {
+            String male = "Male";
+            gender.setText(male);
+        } else {
+            String female = "Female";
+            gender.setText(female);
+        }
 
         expandableListView.setAdapter(new ExpandableListAdapter(personEvents, personFamily));
     }
@@ -67,9 +80,9 @@ public class PersonActivity extends AppCompatActivity {
         private static final int FAMILY_GROUP_POSITION = 1;
 
         private final List<Event> personEvents;
-        private final List<Person> personFamily;
+        private final List<FamilyMember> personFamily;
 
-        ExpandableListAdapter(List<Event> personEvents, List<Person> personFamily) {
+        ExpandableListAdapter(List<Event> personEvents, List<FamilyMember> personFamily) {
             this.personEvents = personEvents;
             this.personFamily = personFamily;
         }
@@ -179,23 +192,42 @@ public class PersonActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
 
-                    // TODO ADD HERE
+                    dataModel.setTransitionEvent(personEvents.get(childPosition));
+
+                    Intent i = new Intent(getApplicationContext(), EventActivity.class);
+                    startActivity(i);
                 }
             });
         }
 
         private void initializeFamilyView(View familyItemView, final int childPosition) {
 
-            // TODO CHANGE IMAGE
+            Drawable genderIcon;
+            if (personFamily.get(childPosition).getPerson().getGender().equals("m")) {
+                genderIcon = new IconDrawable(getApplicationContext(), FontAwesomeIcons.fa_male)
+                        .color(Color.BLUE).sizeDp(40);
+            } else {
+                genderIcon = new IconDrawable(getApplicationContext(), FontAwesomeIcons.fa_female)
+                        .color(Color.MAGENTA).sizeDp(40);
+            }
 
-            // TextView trailLocationView = familyItemView.findViewById(R.id.hikingTrailLocation);
-            // trailLocationView.setText(hikingTrails.get(childPosition).getLocation());
+            ImageView icon = familyItemView.findViewById(R.id.itemImageView);
+            icon.setImageDrawable(genderIcon);
+
+            TextView familyInfoView = familyItemView.findViewById(R.id.itemTextView);
+            String eventInfo = personFamily.get(childPosition).getPerson().getFirstName() +
+                    " " + personFamily.get(childPosition).getPerson().getLastName() +
+                    "\n" + personFamily.get(childPosition).getRelationship();
+            familyInfoView.setText(eventInfo);
 
             familyItemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
 
-                    // TODO ADD HERE
+                    dataModel.setTransitionPerson(personFamily.get(childPosition).getPerson());
+
+                    Intent i = new Intent(getApplicationContext(), PersonActivity.class);
+                    startActivity(i);
                 }
             });
         }

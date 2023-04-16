@@ -288,4 +288,38 @@ public class DataModel {
 
         return orderedEventList;
     }
+
+    public List<FamilyMember> getFamilyMembers(Person inputPerson) {
+
+        ArrayList<FamilyMember> familyMemberList = new ArrayList<>();
+        for (Person person : dataPeople) {
+            if (inputPerson.getFatherID() != null) {
+                if (person.getPersonID().equals(inputPerson.getFatherID())) {
+                    familyMemberList.add(new FamilyMember(person, "Father"));
+                }
+            }
+            if (inputPerson.getMotherID() != null) {
+                if (person.getPersonID().equals(inputPerson.getMotherID())) {
+                    familyMemberList.add(new FamilyMember(person, "Mother"));
+                }
+            }
+            if (person.getPersonID().equals(inputPerson.getSpouseID())) {
+                if (inputPerson.getSpouseID() != null) {
+                    familyMemberList.add(new FamilyMember(person, "Spouse"));
+                }
+            }
+            if (person.getFatherID() != null) {
+                if (person.getFatherID().equals(inputPerson.getPersonID())) {
+                    familyMemberList.add(new FamilyMember(person, "Child"));
+                }
+            }
+            if (person.getMotherID() != null) {
+                if (person.getMotherID().equals(inputPerson.getPersonID())) {
+                    familyMemberList.add(new FamilyMember(person, "Child"));
+                }
+            }
+        }
+
+        return familyMemberList;
+    }
 }
