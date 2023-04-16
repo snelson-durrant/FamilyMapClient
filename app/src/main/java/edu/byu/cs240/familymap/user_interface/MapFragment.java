@@ -124,15 +124,6 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
         map.setOnMapLoadedCallback(this);
 
         updateMarkers();
-        if (getContext().getClass().equals(EventActivity.class)) {
-            selectedEvent = dataModel.getTransitionEvent();
-            LatLng location = new LatLng(selectedEvent.getLatitude(),
-                    selectedEvent.getLongitude());
-            map.animateCamera(CameraUpdateFactory.newLatLng(location));
-
-            updateLines();
-            updateEventInfo();
-        }
 
         map.setOnMarkerClickListener(marker -> {
             selectedEvent = (Event) marker.getTag();
@@ -151,6 +142,16 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
                 .color(Color.GREEN).sizeDp(40);;
         ImageView icon = requireView().findViewById(R.id.eventImageView);
         icon.setImageDrawable(genderIcon);
+
+        if (getContext().getClass().equals(EventActivity.class)) {
+            selectedEvent = dataModel.getTransitionEvent();
+            LatLng location = new LatLng(selectedEvent.getLatitude(),
+                    selectedEvent.getLongitude());
+            map.animateCamera(CameraUpdateFactory.newLatLng(location));
+
+            updateLines();
+            updateEventInfo();
+        }
 
     }
 
