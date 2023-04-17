@@ -4,8 +4,8 @@ import model.Person;
 
 public class FamilyMember {
 
-    private Person person;
-    private String relationship;
+    private final Person person;
+    private final String relationship;
 
     public FamilyMember(Person person, String relationship) {
         this.person = person;
@@ -16,15 +16,7 @@ public class FamilyMember {
         return person;
     }
 
-    public void setPerson(Person person) {
-        this.person = person;
-    }
-
     public String getRelationship() {
         return relationship;
-    }
-
-    public void setRelationship(String relationship) {
-        this.relationship = relationship;
     }
 }

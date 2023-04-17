@@ -39,12 +39,11 @@ public class EventActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         super.onOptionsItemSelected(item);
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
-                break;
+        if (item.getItemId() == android.R.id.home) {
+
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
         }
 
         return true;

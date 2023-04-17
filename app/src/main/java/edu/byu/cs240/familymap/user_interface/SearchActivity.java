@@ -20,7 +20,6 @@ import android.widget.TextView;
 import com.joanzapata.iconify.IconDrawable;
 import com.joanzapata.iconify.fonts.FontAwesomeIcons;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import edu.byu.cs240.familymap.R;
@@ -82,12 +81,10 @@ public class SearchActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         super.onOptionsItemSelected(item);
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
-                break;
+        if (item.getItemId() == android.R.id.home) {
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
         }
 
         return true;
@@ -117,6 +114,7 @@ public class SearchActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull SearchViewHolder holder, int position) {
+
             if(position < searchPeople.size()) {
                 holder.bind(searchPeople.get(position));
             } else {

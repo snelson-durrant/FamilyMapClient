@@ -65,12 +65,10 @@ public class PersonActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
 
         super.onOptionsItemSelected(item);
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                startActivity(intent);
-                break;
+        if (item.getItemId() == android.R.id.home) {
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
         }
 
         return true;
@@ -102,7 +100,8 @@ public class PersonActivity extends AppCompatActivity {
                 case FAMILY_GROUP_POSITION:
                     return personFamily.size();
                 default:
-                    throw new IllegalArgumentException("Unrecognized group position: " + groupPosition);
+                    throw new IllegalArgumentException("Unrecognized group position: "
+                            + groupPosition);
             }
         }
 
@@ -134,9 +133,11 @@ public class PersonActivity extends AppCompatActivity {
         }
 
         @Override
-        public View getGroupView(int groupPosition, boolean isExpanded, View convertView, ViewGroup parent) {
+        public View getGroupView(int groupPosition, boolean isExpanded, View convertView,
+                                 ViewGroup parent) {
             if(convertView == null) {
-                convertView = getLayoutInflater().inflate(R.layout.list_item_group, parent, false);
+                convertView = getLayoutInflater().inflate(R.layout.list_item_group,
+                        parent, false);
             }
 
             TextView titleView = convertView.findViewById(R.id.listTitle);
@@ -149,14 +150,16 @@ public class PersonActivity extends AppCompatActivity {
                     titleView.setText(R.string.family);
                     break;
                 default:
-                    throw new IllegalArgumentException("Unrecognized group position: " + groupPosition);
+                    throw new IllegalArgumentException("Unrecognized group position: "
+                            + groupPosition);
             }
 
             return convertView;
         }
 
         @Override
-        public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
+        public View getChildView(int groupPosition, int childPosition, boolean isLastChild,
+                                 View convertView, ViewGroup parent) {
             View itemView;
 
             switch(groupPosition) {
@@ -190,15 +193,12 @@ public class PersonActivity extends AppCompatActivity {
                     activityPerson.getFirstName() + " " + activityPerson.getLastName();
             eventInfoView.setText(eventInfo);
 
-            eventItemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            eventItemView.setOnClickListener(v -> {
 
-                    dataModel.setTransitionEvent(personEvents.get(childPosition));
+                dataModel.setTransitionEvent(personEvents.get(childPosition));
 
-                    Intent i = new Intent(getApplicationContext(), EventActivity.class);
-                    startActivity(i);
-                }
+                Intent i = new Intent(getApplicationContext(), EventActivity.class);
+                startActivity(i);
             });
         }
 
@@ -222,15 +222,12 @@ public class PersonActivity extends AppCompatActivity {
                     "\n" + personFamily.get(childPosition).getRelationship();
             familyInfoView.setText(eventInfo);
 
-            familyItemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            familyItemView.setOnClickListener(v -> {
 
-                    dataModel.setTransitionPerson(personFamily.get(childPosition).getPerson());
+                dataModel.setTransitionPerson(personFamily.get(childPosition).getPerson());
 
-                    Intent i = new Intent(getApplicationContext(), PersonActivity.class);
-                    startActivity(i);
-                }
+                Intent i = new Intent(getApplicationContext(), PersonActivity.class);
+                startActivity(i);
             });
         }
 

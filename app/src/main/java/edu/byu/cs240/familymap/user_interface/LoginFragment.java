@@ -213,13 +213,7 @@ public class LoginFragment extends Fragment {
             }
         });
 
-        genderRadioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup group, int checkedId) {
-
-                enableButtons();
-            }
-        });
+        genderRadioGroup.setOnCheckedChangeListener((group, checkedId) -> enableButtons());
 
         return view;
     }

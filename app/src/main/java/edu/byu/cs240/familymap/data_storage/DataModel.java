@@ -2,7 +2,6 @@ package edu.byu.cs240.familymap.data_storage;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import model.Person;
 import model.Event;
@@ -10,6 +9,7 @@ import model.User;
 
 public class DataModel {
 
+    // data variables
     private Person[] dataPeople;
     private Event[] dataEvents;
     private Event[] filteredEvents;
@@ -94,7 +94,9 @@ public class DataModel {
         this.authtoken = authtoken;
     }
 
-    public Person getDataUserPerson() {return dataUserPerson;}
+    public Person getDataUserPerson() {
+        return dataUserPerson;
+    }
 
     public void setDataUserPerson(Person dataUserPerson) {
         this.dataUserPerson = dataUserPerson;
@@ -193,6 +195,7 @@ public class DataModel {
         if (fatherFilter) {
             genRecurse(dataUserPerson.getFatherID(), sideFiltered);
         }
+
         if (motherFilter) {
             genRecurse(dataUserPerson.getMotherID(), sideFiltered);
         }
@@ -252,7 +255,9 @@ public class DataModel {
         Event personBirthEvent = null;
         Event personDeathEvent = null;
         for (Event event : filteredEvents) {
+
             if (event.getPersonID().equals(inputPerson.getPersonID())) {
+
                 if (event.getEventType().equalsIgnoreCase("birth")) {
                     personBirthEvent = event;
                 } else if (event.getEventType().equalsIgnoreCase("death")) {
@@ -275,7 +280,6 @@ public class DataModel {
 
                 for (Event tempEvent : tempEventList) {
                     if (tempEvent.getYear() < nextEvent.getYear()) {
-
                         nextEvent = tempEvent;
                     } else if (tempEvent.getYear().equals(nextEvent.getYear())) {
 
@@ -303,6 +307,7 @@ public class DataModel {
 
         ArrayList<FamilyMember> familyMemberList = new ArrayList<>();
         for (Person person : dataPeople) {
+
             if (inputPerson.getFatherID() != null) {
                 if (person.getPersonID().equals(inputPerson.getFatherID())) {
                     familyMemberList.add(new FamilyMember(person, "Father"));
