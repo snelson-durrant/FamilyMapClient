@@ -109,6 +109,9 @@ public class MapFragment extends Fragment implements OnMapReadyCallback,
             case "Settings":
                 newActivityClass = SettingsActivity.class;
                 break;
+            case "Search":
+                newActivityClass = SearchActivity.class;
+                break;
         }
 
         Intent i = new Intent(getActivity(), newActivityClass);

@@ -30,6 +30,8 @@ public class DataModel {
     // transition variables
     private Person transitionPerson;
     private Event transitionEvent;
+    private List<Event> searchEvents;
+    private List<Person> searchPeople;
 
     // singleton logic
     public static DataModel initialize() {
@@ -38,6 +40,14 @@ public class DataModel {
             instance = new DataModel();
         }
         return instance;
+    }
+
+    public List<Event> getSearchEvents() {
+        return searchEvents;
+    }
+
+    public List<Person> getSearchPeople() {
+        return searchPeople;
     }
 
     public Person getTransitionPerson() {
@@ -321,5 +331,39 @@ public class DataModel {
         }
 
         return familyMemberList;
+    }
+
+    public void eventSearch(String query) {
+
+        ArrayList<Event> foundEventsList = new ArrayList<>();
+        if (query != null) {
+
+            for (Event event : filteredEvents) {
+                if (event.getCountry().toLowerCase().contains(query) |
+                        event.getCity().toLowerCase().contains(query) |
+                        event.getEventType().toLowerCase().contains(query) |
+                        event.getYear().toString().contains(query)) {
+                    foundEventsList.add(event);
+                }
+            }
+        }
+
+        searchEvents = foundEventsList;
+    }
+
+    public void personSearch(String query) {
+
+        ArrayList<Person> foundPeopleList = new ArrayList<>();
+        if (query != null) {
+
+            for (Person person : dataPeople) {
+                if (person.getFirstName().toLowerCase().contains(query) |
+                        person.getLastName().toLowerCase().contains(query)) {
+                    foundPeopleList.add(person);
+                }
+            }
+        }
+
+        searchPeople = foundPeopleList;
     }
 }

@@ -38,6 +38,7 @@
     <string name="title_activity_settings">Family Map: Settings</string>
     <string name="title_activity_person">Family Map: Person View</string>
     <string name="title_activity_event">Family Map: Event View</string>
+    <string name="title_activity_search">Family Map: Search</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
