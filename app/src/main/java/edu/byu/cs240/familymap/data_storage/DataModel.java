@@ -192,6 +192,15 @@ public class DataModel {
             }
         }
 
+        if (dataUserPerson.getSpouseID() != null) {
+
+            for (Event event : dataEvents) {
+                if (dataUserPerson.getSpouseID().equals(event.getPersonID())) {
+                    sideFiltered.add(event);
+                }
+            }
+        }
+
         if (fatherFilter) {
             genRecurse(dataUserPerson.getFatherID(), sideFiltered);
         }
