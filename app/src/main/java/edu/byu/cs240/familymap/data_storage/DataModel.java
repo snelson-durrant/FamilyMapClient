@@ -275,9 +275,9 @@ public class DataModel {
 
         if (!tempEventList.isEmpty()) {
 
-            Event nextEvent = tempEventList.get(0);
             while (!tempEventList.isEmpty()) {
 
+                Event nextEvent = tempEventList.get(0);
                 for (Event tempEvent : tempEventList) {
                     if (tempEvent.getYear() < nextEvent.getYear()) {
                         nextEvent = tempEvent;
@@ -344,10 +344,10 @@ public class DataModel {
         if (query != null) {
 
             for (Event event : filteredEvents) {
-                if (event.getCountry().toLowerCase().contains(query) |
-                        event.getCity().toLowerCase().contains(query) |
-                        event.getEventType().toLowerCase().contains(query) |
-                        event.getYear().toString().contains(query)) {
+                if (event.getCountry().toLowerCase().contains(query.toLowerCase()) |
+                        event.getCity().toLowerCase().contains(query.toLowerCase()) |
+                        event.getEventType().toLowerCase().contains(query.toLowerCase()) |
+                        event.getYear().toString().contains(query.toLowerCase())) {
                     foundEventsList.add(event);
                 }
             }
@@ -362,8 +362,8 @@ public class DataModel {
         if (query != null) {
 
             for (Person person : dataPeople) {
-                if (person.getFirstName().toLowerCase().contains(query) |
-                        person.getLastName().toLowerCase().contains(query)) {
+                if (person.getFirstName().toLowerCase().contains(query.toLowerCase()) |
+                        person.getLastName().toLowerCase().contains(query.toLowerCase())) {
                     foundPeopleList.add(person);
                 }
             }
