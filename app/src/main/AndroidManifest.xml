@@ -35,7 +35,7 @@
             android:label="@string/title_activity_search" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBJGSWit4W21oyXeOJaT6t3mrAtCmP7zT0" />
+            android:value="VOID" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
